@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+{% block title %}Create ban{% endblock %}
+{% block content %}
+	<h1>Create Ban</h1>
+	<nav>
+		<a href="{{ url_for('bans_manager.bans_list') }}">Return</a>
+	</nav>
+	{% for error in errors %}
+		<p class="form_error">{{ error }}</p>
+	{% endfor %}
+	<form method="post">
+		{#TODO maybe a more usable duration input eventually instead of manually entering seconds #}
+		<label for="duration">Duration</label>
+		<select id="duration" name="duration">
+			<option value="3600">1 hour</option>
+			<option value="86400">1 day</option>
+			<option value="259200">3 days</option>
+			<option value="604800">1 week</option>
+			<option value="2419200">1 month</option>
+			<option value="31536000">1 year</option>
+			<option value="0">Permanent</option>
+		</select>
+		<br>
+		<label for="scope">Scope</label>
+		<input 
+			id="scope" 
+			name="scope" 
+			type="text" 
+			placeholder="Leave blank for global">
+		<br>
+		<label for="reason">Reason</label>
+		<input 
+			id="reason" 
+			name="reason" 
+			type="text" 
+			placeholder="Public reason">
+		<br>
+		<label for="note">Note</label>
+		<input 
+			id="note" 
+			name="note" 
+			type="text" 
+			placeholder="Internal note">
+		<br>
+		<label for="remote_origin">Remote origin</label>
+		<input 
+			id="remote_origin" 
+			name="remote_origin" 
+			type="text">
+		<br>
+		<label for="user">User</label>
+		<input 
+			id="user_id" 
+			name="user_id" 
+			type="text" 
+			placeholder="User ID">
+		<br>
+		<input type="submit" value="Create ban">
+	</form>
+{% endblock %}

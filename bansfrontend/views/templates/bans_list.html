@@ -1,0 +1,259 @@
+{% extends 'layout.html' %}
+{% block title %}Bans list{% endblock %}
+{% block content %}
+	<h1>Bans list</h1>
+	<nav>
+		<a href="{{ url_for('bans_manager.create_ban') }}">Create ban</a> 
+		<a href="{{ url_for('bans_manager.prune_bans') }}">Prune bans</a>
+	</nav>
+	{% from 'users.jinja' import edit_user_link, user_display %}
+	{% macro render_result(result) %}
+		<tr 
+			{% if result.expired %}
+				class="expired"
+			{% elif not result.expiration_time %}
+				class="permanent"
+			{% endif %}>
+			<td>
+				<a 
+					href="{{ url_for(
+						'bans_manager.bans_list',
+						sort=pagination['sort'],
+						order=pagination['order'],
+						perpage=pagination['perpage'],
+						id=result.id,
+					) }}" 
+					title="View ban in list">
+					○
+				</a>
+			</td>
+			<td data-timestamp="{{ result.creation_time }}">
+				{{ result.creation_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f%z') }}
+			</td>
+			<td>
+				<a 
+					href="{{ url_for(
+						'bans_manager.bans_list',
+						sort=pagination['sort'],
+						order=pagination['order'],
+						perpage=pagination['perpage'],
+						remote_origin=result.remote_origin.exploded,
+					) }}" 
+					title="Search this remote origin's bans">
+					{{ result.remote_origin.exploded }}
+				</a>
+			</td>
+			<td>
+				{% if not result.scope %}
+					{% set scope = 'global' %}
+				{% else %}
+					{% set scope = result.scope %}
+				{% endif %}
+				<a 
+					href="{{ url_for(
+						'bans_manager.bans_list',
+						sort=pagination['sort'],
+						order=pagination['order'],
+						perpage=pagination['perpage'],
+						scope=scope,
+					) }}" 
+					title="Search this scope's bans">
+					{#TODO descriptive scope display strings maybe? #}
+					{{ scope }}
+				</a>
+			</td>
+			<td>{{ result.reason }}</td>
+			<td>{{ result.note }}</td>
+			{% if not result.expiration_time %}
+				<td>Never</td>
+			{% else %}
+				<td data-timestamp="{{ result.expiration_time }}">
+					{{ result.expiration_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f%z') }}
+				</td>
+			{% endif %}
+			{% if not result.view_time %}
+				<td></td>
+			{% else %}
+				<td data-timestamp="{{ result.view_time }}">
+					{{ result.view_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f%z') }}
+				</td>
+			{% endif %}
+			{% if not result.created_by_user_id %}
+				{% set created_by_user_id = 'system' %}
+			{% else %}
+				{% set created_by_user_id = result.created_by_user_id %}
+			{% endif %}
+			<td>
+				<a href="{{ url_for(
+						'bans_manager.bans_list',
+						sort=pagination['sort'],
+						order=pagination['order'],
+						perpage=pagination['perpage'],
+						created_by_user_id=created_by_user_id,
+					) }}" 
+					title="Search bans created by this user">
+					(Search)
+				</a> 
+			</td>
+			<td>
+				{% if not result.created_by_user_id %}
+					System
+				{% else %}
+					{{ edit_user_link(result.created_by_user) }}
+				{% endif %}
+			</td>
+			{% if not result.user_id %}
+				<td></td>
+				<td></td>
+			{% else %}
+				<td>
+					<a href="{{ url_for(
+							'bans_manager.bans_list',
+							sort=pagination['sort'],
+							order=pagination['order'],
+							perpage=pagination['perpage'],
+							user_id=result.user_id,
+						) }}" 
+						title="Search this user's bans">
+						(Search)
+					</a> 
+				</td>
+				<td>
+					{{ edit_user_link(result.created_by_user) }}
+				</td>
+			{% endif %}
+			<td>
+				<a 
+					href="{{ url_for('bans_manager.remove_ban', ban_id=result.id) }}" 
+					title="Remove this ban">
+					Remove
+				</a>
+			</td>
+		</tr>
+	{% endmacro %}
+	{% set scope_options = {'': 'Any'} %}
+	{% for scope in unique_scopes %}
+		{% if not scope %}
+			{% set _temp = scope_options.update({'global': 'global'}) %}
+		{% else %}
+			{#TODO descriptive scope display strings maybe? #}
+			{% set _temp = scope_options.update({scope: scope}) %}
+		{% endif %}
+	{% endfor %}
+	{% set columns = [
+		{
+			'name': 'id',
+			'label': 'ID',
+			'sortable': False,
+			'searchable': True,
+			'type': 'text',
+		},
+		{
+			'name': 'creation_time',
+			'label': 'Created',
+			'sortable': True,
+			'searchable': True,
+			'type': 'amount',
+			'less_than_name': 'created_before',
+			'less_than_label': 'Created before',
+			'less_than_placeholder': 'Datetime string',
+			'greater_than_name': 'created_after',
+			'greater_than_label': 'Created after',
+			'greater_than_placeholder': 'Datetime string',
+		},
+		{
+			'name': 'remote_origin',
+			'label': 'Remote origin',
+			'sortable': False,
+			'searchable': True,
+			'type': 'text',
+		},
+		{
+			'name': 'scope',
+			'label': 'Scope',
+			'sortable': False,
+			'searchable': True,
+			'type': 'select',
+			'options': scope_options,
+		},
+		{
+			'name': 'reason',
+			'label': 'Reason',
+			'sortable': False,
+			'searchable': True,
+			'type': 'text',
+		},
+		{
+			'name': 'note',
+			'label': 'Note',
+			'sortable': False,
+			'searchable': True,
+			'type': 'text',
+		},
+		{
+			'name': 'expiration_time',
+			'label': 'Expiration',
+			'sortable': True,
+			'searchable': True,
+			'type': 'amount',
+			'less_than_name': 'expired_before',
+			'less_than_label': 'Expired before',
+			'less_than_placeholder': 'Datetime string',
+			'greater_than_name': 'expired_after',
+			'greater_than_label': 'Expired after',
+			'greater_than_placeholder': 'Datetime string',
+		},
+		{
+			'name': 'view_time',
+			'label': 'Viewed',
+			'sortable': True,
+			'searchable': True,
+			'type': 'amount',
+			'less_than_name': 'viewed_before',
+			'less_than_label': 'Viewed before',
+			'less_than_placeholder': 'Datetime string',
+			'greater_than_name': 'viewed_after',
+			'greater_than_label': 'Viewed after',
+			'greater_than_placeholder': 'Datetime string',
+		},
+		{
+			'name': 'search_created_by_user',
+			'label': '',
+			'sortable': False,
+			'searchable': False,
+		},
+		{
+			'name': 'created_by_user_id',
+			'label': 'Created by',
+			'sortable': False,
+			'searchable': True,
+			'type': 'text',
+			'placeholder': 'User ID',
+		},
+		{
+			'name': 'search_user',
+			'label': '',
+			'sortable': False,
+			'searchable': False,
+		},
+		{
+			'name': 'user_id',
+			'label': 'For user',
+			'sortable': False,
+			'searchable': True,
+			'type': 'text',
+			'placeholder': 'User ID',
+		},
+	] %}
+	{% from 'tabular_list.jinja' import tabular_list %}
+	{{ tabular_list(
+		columns,
+		'bans_manager.bans_list',
+		results,
+		total_results,
+		render_result,
+		total_pages,
+		pagination,
+		search,
+	) }}
+{% endblock %}

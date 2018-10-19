@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block title %}Banned{% endblock %}
+{% block content %}
+	<h1>You have been banned</h1>
+	{% if ban.reason %}
+		<p>Reason: {{ ban.reason }}</p>
+	{% endif %}
+	{% if not ban.expiration_time %}
+		<p>This ban will not expire</p>
+	{% else %}
+		<p>
+			Expiration: 
+			<span data-timestamp="{{ ban.expiration_time }}">
+				{{ ban.expiration_datetime.strftime('%Y-%m-%dT%H:%M:%S.%f%z') }}
+			</span>
+		</p>
+	{% endif %}
+{% endblock %}
