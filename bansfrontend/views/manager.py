@@ -10,6 +10,7 @@ import dateutil.parser
 
 from pagination_from_request import pagination_from_request
 from . import require_ban
+from accounts.views import require_permissions
 
 bans_manager = Blueprint(
 	'bans_manager',
@@ -18,8 +19,8 @@ bans_manager = Blueprint(
 )
 
 @bans_manager.route('/bans/create', methods=['GET', 'POST'])
+@require_permissions(group_names='manager')
 def create_ban():
-	g.bans.accounts.require_permissions(group_names='manager')
 	if 'POST' != request.method:
 		return render_template('create_ban.html')
 	for field in [
@@ -79,8 +80,8 @@ def create_ban():
 	)
 
 @bans_manager.route('/bans/prune')
+@require_permissions(group_names='manager')
 def prune_bans():
-	g.bans.accounts.require_permissions(group_names='manager')
 	#TODO this probably belongs in a cronjob
 	# but for now manually triggering prune of expired bans older than review
 	# period is fine
@@ -88,15 +89,15 @@ def prune_bans():
 	return redirect(url_for('bans_manager.bans_list'), code=303)
 
 @bans_manager.route('/bans/<ban_id>/remove')
+@require_permissions(group_names='manager')
 def remove_ban(ban_id):
-	g.bans.accounts.require_permissions(group_names='manager')
 	ban = require_ban(ban_id)
 	g.bans.delete_ban(ban, g.bans.accounts.current_user.id_bytes)
 	return redirect(url_for('bans_manager.bans_list'), code=303)
 
 @bans_manager.route('/bans')
+@require_permissions(group_names='manager')
 def bans_list():
-	g.bans.accounts.require_permissions(group_names='manager')
 	search = {
 		'id': '',
 		'created_before': '',
