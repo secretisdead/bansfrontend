@@ -124,7 +124,7 @@
 			{% endif %}
 			<td>
 				<a 
-					href="{{ url_for('bans_manager.remove_ban', ban_id=result.id) }}" 
+					href="{{ url_for('bans_manager.remove_ban', ban_id=result.id, redirect_uri=request.url) }}" 
 					title="Remove this ban">
 					Remove
 				</a>

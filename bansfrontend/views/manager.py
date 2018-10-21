@@ -93,6 +93,8 @@ def prune_bans():
 def remove_ban(ban_id):
 	ban = require_ban(ban_id)
 	g.bans.delete_ban(ban, g.bans.accounts.current_user.id_bytes)
+	if 'redirect_uri' in request.args:
+		return redirect(request.args['redirect_uri'], code=303)
 	return redirect(url_for('bans_manager.bans_list'), code=303)
 
 @bans_manager.route('/bans')
