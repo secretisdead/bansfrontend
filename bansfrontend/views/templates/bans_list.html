@@ -91,11 +91,10 @@
 						perpage=pagination['perpage'],
 						created_by_user_id=created_by_user_id,
 					) }}" 
-					title="Search bans created by this user">
+					title="Search bans created by this user" 
+					class="search">
 					(Search)
 				</a> 
-			</td>
-			<td>
 				{% if not result.created_by_user_id %}
 					System
 				{% else %}
@@ -103,7 +102,6 @@
 				{% endif %}
 			</td>
 			{% if not result.user_id %}
-				<td></td>
 				<td></td>
 			{% else %}
 				<td>
@@ -114,11 +112,10 @@
 							perpage=pagination['perpage'],
 							user_id=result.user_id,
 						) }}" 
-						title="Search this user's bans">
+						title="Search this user's bans" 
+						class="search">
 						(Search)
 					</a> 
-				</td>
-				<td>
 					{{ edit_user_link(result.created_by_user) }}
 				</td>
 			{% endif %}
@@ -217,24 +214,12 @@
 			'greater_than_placeholder': 'Datetime string',
 		},
 		{
-			'name': 'search_created_by_user',
-			'label': '',
-			'sortable': False,
-			'searchable': False,
-		},
-		{
 			'name': 'created_by_user_id',
 			'label': 'Created by',
 			'sortable': False,
 			'searchable': True,
 			'type': 'text',
 			'placeholder': 'User ID',
-		},
-		{
-			'name': 'search_user',
-			'label': '',
-			'sortable': False,
-			'searchable': False,
 		},
 		{
 			'name': 'user_id',
