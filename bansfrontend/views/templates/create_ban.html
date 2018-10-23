@@ -33,14 +33,16 @@
 			id="reason" 
 			name="reason" 
 			type="text" 
-			placeholder="Public reason">
+			placeholder="Public reason" 
+			maxlength="{{ g.bans.config['maximum_reason_length'] }}">
 		<br>
 		<label for="note">Note</label>
 		<input 
 			id="note" 
 			name="note" 
 			type="text" 
-			placeholder="Internal note">
+			placeholder="Internal note" 
+			maxlength="{{ g.bans.config['maximum_note_length'] }}">
 		<br>
 		<label for="remote_origin">Remote origin</label>
 		<input 
