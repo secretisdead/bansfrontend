@@ -1,4 +1,7 @@
 {
 	"db_prefix": "",
-	"expired_ban_review_lifetime": 2628000
+	"expired_ban_review_lifetime": 2628000,
+
+	"maximum_reason_length": 64,
+	"maximum_note_length": 64
 }
