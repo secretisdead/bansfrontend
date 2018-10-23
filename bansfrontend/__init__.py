@@ -10,6 +10,15 @@ class BansFrontend(Bans):
 		self.accounts = accounts
 		self.access_log = access_log
 
+		self.config['maximum_reason_length'] = min(
+			self.reason_length,
+			self.config['maximum_reason_length'],
+		)
+		self.config['maximum_note_length'] = min(
+			self.note_length,
+			self.config['maximum_note_length'],
+		)
+
 		self.callbacks = {}
 
 	def add_callback(self, name, f):
