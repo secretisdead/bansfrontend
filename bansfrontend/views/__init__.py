@@ -7,13 +7,21 @@ from flask import request, abort
 
 from .. import BansFrontend
 
-def initialize(config, accounts, access_log, engine, install):
+def initialize(
+		config,
+		accounts,
+		access_log,
+		engine,
+		install=False,
+		connection=None,
+	):
 	g.bans = BansFrontend(
 		config,
 		accounts,
 		access_log,
 		engine,
 		install=install,
+		connection=connection,
 	)
 
 # require objects or abort
